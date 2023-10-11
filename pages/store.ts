@@ -42,13 +42,12 @@ class UserStore {
     }
 
     registerUser = async() => {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.user)
+        const response = await fetch('http://127.0.0.1:8000/auth/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.user)
         })
         const data = await response.json()
         if (response.status === 201) {
@@ -56,15 +55,27 @@ class UserStore {
             this.message = newMessage
         }
         else{
-            const newMessage = "failed"
-            this.message = newMessage
+            try{
+                const errorMessage = data.errors.non_field_errors[0];
+                const newMessage = errorMessage
+                this.message = newMessage
+            }
+            catch(error:any){
+                try{
+                    const errorsObject = data.errors;
+                    const error_key = Object.keys(errorsObject)[0];
+                    const errorMessage = errorsObject[error_key][0];
+                    this.message = errorMessage;
+                }
+                catch(error:any){
+                    const newMessage = "try again"
+                    this.message = newMessage
+                }
+            }
+            
         }
 
-        }
-        catch(error){
-            console.error("Error while registering user:", error);
-            this.message = "failed";
-        }
+        
 
     }
 
