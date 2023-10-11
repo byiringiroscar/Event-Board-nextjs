@@ -45,7 +45,6 @@ class UserStore {
             body: JSON.stringify(this.user)
         })
         const data = await response.json()
-        // if  status code is 201
         if (response.status === 201) {
             const newMessage = "user created successfully"
             this.message = newMessage
