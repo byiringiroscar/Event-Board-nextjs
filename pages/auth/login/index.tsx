@@ -1,7 +1,14 @@
+import styles from '../../../styles/auth/style.module.scss';
+
 const Login = () => {
     return (
-        <div>
-        <h1>Login</h1>
+        <div className={styles.container}>
+        <h2 className="text-xl font-[bold]">Login</h2>
+        <form>
+            <input type='email' placeholder='enter email' required />
+            <input type='password' placeholder='enter password' required />
+            <button type='submit'>Login</button>
+        </form>
         </div>
     )
 }
