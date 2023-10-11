@@ -27,6 +27,14 @@ const Register = () => {
         await userStore.registerUser();
         if (userStore.message === "success"){
             toast.success('Successful user registered!', { position: 'top-right' });
+            setFormData({
+                email: "",
+                username: "",
+                full_name: "",
+                phone_number: "",
+                password: "",
+                password_2: "",
+              });
         }
         else{
             toast.error('Error occured.', { position: 'top-right' });
