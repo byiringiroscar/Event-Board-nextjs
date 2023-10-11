@@ -29,6 +29,7 @@ class UserStore {
             message: observable,
             getUser: action,
             registerUser: action,
+            loginUser: action,
         })
     }
 
@@ -76,6 +77,30 @@ class UserStore {
         }
 
         
+
+    }
+
+    loginUser = async() => {
+        const response = await fetch('http://127.0.0.1:8000/auth/event/token/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: this.user.email,
+            password: this.user.password,
+        })
+        })
+        const data = await response.json()
+        console.log("----------", response.status)
+        if (response.status === 200) {
+            const newMessage = "success"
+            this.message = newMessage
+        }
+        else{
+            const newMessage = "Credential not match"
+            this.message = newMessage
+        }
 
     }
 
