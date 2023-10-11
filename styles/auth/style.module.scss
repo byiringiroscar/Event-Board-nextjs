@@ -1,12 +1,15 @@
 .container {
     @apply w-screen h-screen flex flex-col items-center  ;
+    h2{
+        @apply text-[30px] font-bold mt-[50px] ;
+    }
     form{
-        @apply flex flex-col gap-3 mt-10 ;
+        @apply flex items-center flex-col gap-3 mt-10 ;
         input{
-            @apply border rounded-[5px] border-solid border-[black] pl-[5px] w-[250px];
+            @apply border rounded-[5px] border-solid border-[black] pl-[5px] w-[350px];
         }
         button{
-            @apply border rounded-[5px] p-1  w-[250px] transition-[0.3s] text-white bg-black hover:bg-[white] hover:text-[black] hover:border hover:border-solid hover:border-[black];
+            @apply border rounded-[5px] p-1  w-[200px] transition-[0.3s] text-white bg-black hover:bg-[white] hover:text-[black] hover:border hover:border-solid hover:border-[black];
         }
     }
   }

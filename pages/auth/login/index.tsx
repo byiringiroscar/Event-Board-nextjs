@@ -3,7 +3,7 @@ import styles from '../../../styles/auth/style.module.scss';
 const Login = () => {
     return (
         <div className={styles.container}>
-        <h2 className="text-xl font-[bold]">Login</h2>
+        <h2>Login</h2>
         <form>
             <input type='email' placeholder='enter email' required />
             <input type='password' placeholder='enter password' required />
