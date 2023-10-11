@@ -1,4 +1,5 @@
 import styles from '../../../styles/auth/style.module.scss';
+import { observer } from "mobx-react-lite";
 
 const Login = () => {
     return (
