@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import userStore from "../../store"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from 'next/router';
+
 
 const Register = () => {
+    const router = useRouter();
     const [formData, setFormData] = useState({
         email: "",
         username: "",
@@ -35,6 +38,9 @@ const Register = () => {
                 password: "",
                 password_2: "",
               });
+                router.push('/auth/login');
+
+
         }
         else{
             toast.error(userStore.message, { position: 'top-right' });
