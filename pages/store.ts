@@ -52,18 +52,18 @@ class UserStore {
         })
         const data = await response.json()
         if (response.status === 201) {
-            const newMessage = "user created successfully"
+            const newMessage = "success"
             this.message = newMessage
         }
         else{
-            const newMessage = "user not created"
+            const newMessage = "failed"
             this.message = newMessage
         }
 
         }
         catch(error){
             console.error("Error while registering user:", error);
-            this.message = "Registration failed. Please try again later.";
+            this.message = "failed";
         }
 
     }

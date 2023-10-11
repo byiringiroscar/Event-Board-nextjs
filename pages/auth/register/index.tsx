@@ -25,11 +25,11 @@ const Register = () => {
         const { email, username, full_name, phone_number, password, password_2 } = formData;
         userStore.getUser(email, username, full_name, phone_number, password, password_2);
         await userStore.registerUser();
-        if (userStore.message === "User created successfully"){
-            toast.success(userStore.message);
+        if (userStore.message === "success"){
+            toast.success('Successful user registered!', { position: 'top-right' });
         }
         else{
-            toast.error(userStore.message);
+            toast.error('Error occured.', { position: 'top-right' });
         }
 
     };
@@ -37,7 +37,7 @@ const Register = () => {
     return (
         <div className={styles.container}>
         <h2>Register</h2>
-        <form method='POST'>
+        <form method='POST' onSubmit={handleSubmit}>
             <input type='email' placeholder='enter email' name='email' value={formData.email} onChange={handleChange}  required />
             <input type='text' placeholder='enter username' name="username" value={formData.username} onChange={handleChange} required />
             <input type='text' placeholder='enter full_name' name="full_name" value={formData.full_name} onChange={handleChange} required />
