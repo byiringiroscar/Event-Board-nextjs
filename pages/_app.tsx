@@ -7,11 +7,18 @@ import userStore from './store';
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
+    const token = localStorage.getItem('authTokenNew');
+    if (token) {
+      userStore.startTokenRefreshTimer();
+    }
+
+
     // Clear the token refresh timer on logout.
     return () => {
       userStore.clearTokenRefreshTimer();
     };
   }, []);
+  
   return (
     <>
       <Component {...pageProps} />

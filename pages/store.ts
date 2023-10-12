@@ -116,7 +116,8 @@ class UserStore {
 
     // update token
     updateToken = async() => {
-        const router = useRouter();
+        console.log("--------------token refreshed-----------")
+        try{
         if (this.tokenRefreshTimer) {
             clearTimeout(this.tokenRefreshTimer);
             this.tokenRefreshTimer = null;
@@ -133,18 +134,23 @@ class UserStore {
         if (response.status === 200){
             this.new_user = jwt_decode(data.access)
             localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access }));
+            this.startTokenRefreshTimer();
         }
         else {
-            console.log("token not valid")
             localStorage.removeItem('authTokenNew');
             this.clearTokenRefreshTimer();
-            router.push('/auth/login');
+            this.new_user = "";
 
         }
         this.startTokenRefreshTimer();
         }
+        catch(error:any){
+            this.clearTokenRefreshTimer();
+            this.new_user = "";
+        }
+    }
     startTokenRefreshTimer = () => {
-        this.tokenRefreshTimer = setTimeout(this.updateToken, 240000);
+        this.tokenRefreshTimer = setTimeout(this.updateToken, 30000);
     }
 
     clearTokenRefreshTimer = () => {
