@@ -1,6 +1,6 @@
 import styles from '../../../styles/auth/style.module.scss';
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import userStore from "../../store"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -38,10 +38,16 @@ const Login = () => {
                 password_2: "",
               });
                 router.push('/');
+                // Start the token refresh timer after successful login
+                userStore.startTokenRefreshTimer();
         }
         else{
             toast.error(userStore.message, { position: 'top-right' });
         }
+    }
+    const handleLogout = () => {
+        // Perform logout actions here
+        userStore.clearTokenRefreshTimer(); // Clear the token refresh timer on logout.
     }
 
     return (

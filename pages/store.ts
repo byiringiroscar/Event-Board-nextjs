@@ -24,6 +24,8 @@ class UserStore {
         password: '',
         password_2: '',
     }
+    tokenRefreshTimer: NodeJS.Timeout | null = null;
+    new_user: any = "";
     message: string = "";
     constructor() {
         makeObservable(this, {
@@ -32,6 +34,10 @@ class UserStore {
             getUser: action,
             registerUser: action,
             loginUser: action,
+            new_user: observable,
+            updateToken: action,
+            startTokenRefreshTimer: action,
+            clearTokenRefreshTimer: action,
         })
     }
 
@@ -94,16 +100,53 @@ class UserStore {
         })
         })
         const data = await response.json()
-        console.log("----------", data)
         if (response.status === 200) {
             const newMessage = "success"
             this.message = newMessage
+            this.new_user = jwt_decode(data.access)
+            localStorage.setItem('authTokenNew', JSON.stringify(data));
         }
         else{
             const newMessage = "Credential not match"
             this.message = newMessage
         }
 
+    }
+
+    // update token
+    updateToken = async() => {
+        if (this.tokenRefreshTimer) {
+            clearTimeout(this.tokenRefreshTimer);
+            this.tokenRefreshTimer = null;
+          }
+        const token = JSON.parse(localStorage.getItem('authTokenNew') || '{}');
+        console.log("-------token to be changed ", token.refresh)
+        const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({'refresh': token.refresh})
+        })
+        const data = await response.json()
+        if (response.status === 200){
+            this.new_user = jwt_decode(data.access)
+            localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access }));
+        }
+        else {
+            console.log("token not valid")
+        }
+        this.startTokenRefreshTimer();
+        }
+    startTokenRefreshTimer = () => {
+        this.tokenRefreshTimer = setTimeout(this.updateToken, 30000);
+    }
+
+    clearTokenRefreshTimer = () => {
+        if (this.tokenRefreshTimer) {
+            clearTimeout(this.tokenRefreshTimer);
+            this.tokenRefreshTimer = null;
+        }
     }
 
 }
