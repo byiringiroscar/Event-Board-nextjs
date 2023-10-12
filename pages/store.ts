@@ -1,6 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 import { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
+import { useRouter } from 'next/router';
 
 
 export interface User {
@@ -115,12 +116,12 @@ class UserStore {
 
     // update token
     updateToken = async() => {
+        const router = useRouter();
         if (this.tokenRefreshTimer) {
             clearTimeout(this.tokenRefreshTimer);
             this.tokenRefreshTimer = null;
           }
         const token = JSON.parse(localStorage.getItem('authTokenNew') || '{}');
-        console.log("-------token to be changed ", token.refresh)
         const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
         method: 'POST',
         headers: {
@@ -135,11 +136,15 @@ class UserStore {
         }
         else {
             console.log("token not valid")
+            localStorage.removeItem('authTokenNew');
+            this.clearTokenRefreshTimer();
+            router.push('/auth/login');
+
         }
         this.startTokenRefreshTimer();
         }
     startTokenRefreshTimer = () => {
-        this.tokenRefreshTimer = setTimeout(this.updateToken, 30000);
+        this.tokenRefreshTimer = setTimeout(this.updateToken, 240000);
     }
 
     clearTokenRefreshTimer = () => {
