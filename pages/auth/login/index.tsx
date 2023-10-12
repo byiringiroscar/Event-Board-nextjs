@@ -5,7 +5,7 @@ import userStore from "../../store"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
-
+import Link from 'next/link';
 const Login = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -52,6 +52,7 @@ const Login = () => {
             <input type='password' placeholder='enter password' name="password" value={formData.password} onChange={handleChange} required />
             <button type='submit'>Login</button>
         </form>
+        <p>Dont have an account? <Link href='/auth/register' className='text-[blue] font-[bold]'>Register</Link></p>
         </div>
     )
 }

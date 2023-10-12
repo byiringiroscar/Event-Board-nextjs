@@ -1,4 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
+import { createContext, useState, useEffect } from "react";
+import jwt_decode from "jwt-decode";
 
 
 export interface User {
@@ -92,7 +94,7 @@ class UserStore {
         })
         })
         const data = await response.json()
-        console.log("----------", response.status)
+        console.log("----------", data)
         if (response.status === 200) {
             const newMessage = "success"
             this.message = newMessage

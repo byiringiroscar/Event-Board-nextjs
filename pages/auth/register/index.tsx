@@ -5,6 +5,7 @@ import userStore from "../../store"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 
 const Register = () => {
@@ -60,6 +61,7 @@ const Register = () => {
             <input type='password' placeholder='confirm password' name="password_2" value={formData.password_2} onChange={handleChange} required />
             <button type='submit'>Register</button>
         </form>
+        <p>Have an account? <Link href='/auth/login' className='text-[blue] font-[bold]'>Login</Link></p>
         </div>
     )
 }
