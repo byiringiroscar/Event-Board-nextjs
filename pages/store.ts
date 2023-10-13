@@ -102,9 +102,10 @@ class UserStore {
         })
         const data = await response.json()
         if (response.status === 200) {
-            const newMessage = "success"
-            this.message = newMessage
-            this.new_user = jwt_decode(data.access)
+            const newMessage = "success";
+            this.message = newMessage;
+            const newUpdateUser: any = jwt_decode(data.access);
+            this.new_user = newUpdateUser.username
             localStorage.setItem('authTokenNew', JSON.stringify(data));
         }
         else{
@@ -132,8 +133,9 @@ class UserStore {
         })
         const data = await response.json()
         if (response.status === 200){
-            this.new_user = jwt_decode(data.access)
-            localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access }));
+            const newUpdateUser: any = jwt_decode(data.access);
+            this.new_user = newUpdateUser.username
+            localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access, refresh:data.refresh }));
             this.startTokenRefreshTimer();
         }
         else {
