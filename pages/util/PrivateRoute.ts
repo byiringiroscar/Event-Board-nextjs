@@ -9,13 +9,13 @@ interface PrivateRouteProps {
 export function PrivateRoute({ children }:PrivateRouteProps) {
     const router = useRouter();
   
-    // useEffect(() => {
-    //     // const token = localStorage.getItem('authTokenNew');
-    //     const token = JSON.parse(Cookies.get('authTokenNew') || '{}');
-    //     if (token) {
-    //         useStore.startTokenRefreshTimer();
-    //       }
-    // }, []);
+    useEffect(() => {
+        // const token = localStorage.getItem('authTokenNew');
+        const token = JSON.parse(Cookies.get('authTokenNew') || '{}');
+        if (token) {
+            useStore.startTokenRefreshTimer();
+          }
+    }, []);
   
     return children;
   }

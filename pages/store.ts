@@ -43,6 +43,7 @@ class UserStore {
             updateToken: action,
             startTokenRefreshTimer: action,
             clearTokenRefreshTimer: action,
+            validateToken: action,
         })
     }
 
@@ -132,8 +133,6 @@ class UserStore {
             }
             // const token = JSON.parse(localStorage.getItem('authTokenNew') || '{}');
             const token = JSON.parse(Cookies.get('authTokenNew') || '{}');
-            console.log('token==========================upd--', token)
-            console.log('toke======refresh=============', token.refresh)
             const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
             method: 'POST',
             headers: {
@@ -179,7 +178,6 @@ class UserStore {
 
     // validate token
     validateToken = async (token: any): Promise<boolean> => {
-        console.log('start------------------------', token.refresh);
         const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
           method: 'POST',
           headers: {
@@ -188,7 +186,6 @@ class UserStore {
           body: JSON.stringify({'refresh': token.refresh})
         });
         const data = await response.json();
-        console.log('----result--------------validate-----', data);
       
         let tokenAccess = false;
         if (response.status === 200){
@@ -211,6 +208,27 @@ class UserStore {
       
         return tokenAccess;
       };
+
+    verifyToken = async (token: any): Promise<boolean> => {
+    const response = await fetch('http://127.0.0.1:8000/auth/api/token/verify/', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({'token': token.refresh})
+    });
+    const data = await response.json();
+    
+    let tokenAccess = false;
+    if (response.status === 200){
+        tokenAccess = true;
+    
+    } else {
+        tokenAccess = false;
+    }
+    
+    return tokenAccess;
+    };
 
         
 

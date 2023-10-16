@@ -6,20 +6,22 @@ import Cookies from 'js-cookie';
 
 
 export default async function middleware(req: NextRequest, res: NextResponse) {
-    console.log('--------------done in middle------------------');
+    const { pathname } = req.nextUrl
     const cookie = req.cookies.get('authTokenNew')
     // token
     const currentToken = cookie?.value;
     const token = currentToken ? JSON.parse(currentToken) : null;
-    console.log(cookie, '----------------------------------ffff')
     if(!token){
         return NextResponse.redirect('http://127.0.0.1:3000/auth/login');
     }
     
-    const isValidToken = await useStore.validateToken(token);
+    const isValidToken = await useStore.verifyToken(token);
     if(isValidToken === false){
         return NextResponse.redirect('http://127.0.0.1:3000/auth/login');
     }
+    if (isValidToken && pathname.endsWith('/auth/login')) {
+        return NextResponse.redirect('http://127.0.0.1:3000/');
+      }
 
     return NextResponse.next();
   
@@ -28,5 +30,6 @@ export default async function middleware(req: NextRequest, res: NextResponse) {
 export const config = {
     matcher:[
         '/',
+        '/auth/login',
     ],
 }
