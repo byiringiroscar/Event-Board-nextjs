@@ -141,6 +141,7 @@ class UserStore {
             body: JSON.stringify({'refresh': token.refresh})
             })
             const data = await response.json()
+            let tokenSuccess = false;
             if (response.status === 200){
                 const newUpdateUser: any = jwt_decode(data.access);
                 this.new_user = newUpdateUser.username
@@ -148,25 +149,30 @@ class UserStore {
                 // save data to cookies
                 Cookies.set('authTokenNew', JSON.stringify({ ...token, access: data.access, refresh:data.refresh }), { expires: expirationDate });
                 this.startTokenRefreshTimer();
+                tokenSuccess = true;
             }
             else {
                 // localStorage.removeItem('authTokenNew');
                 Cookies.remove('authTokenNew'); // Remove the cookie
                 this.clearTokenRefreshTimer();
                 this.new_user = "";
+                tokenSuccess = false;
 
             }
             this.startTokenRefreshTimer();
+            return tokenSuccess;
         }
         catch(error:any){
             // localStorage.removeItem('authTokenNew');
             Cookies.remove('authTokenNew'); // Remove the cookie
             this.clearTokenRefreshTimer();
             this.new_user = "";
+            return false;
         }
     }
     startTokenRefreshTimer = () => {
         this.tokenRefreshTimer = setTimeout(this.updateToken, 30000);
+        
     }
 
     clearTokenRefreshTimer = () => {
