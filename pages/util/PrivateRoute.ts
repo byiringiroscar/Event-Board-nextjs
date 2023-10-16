@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import useStore   from "../store";
+import Cookies from 'js-cookie';
 
 interface PrivateRouteProps {
     children: React.ReactNode;
@@ -8,20 +9,13 @@ interface PrivateRouteProps {
 export function PrivateRoute({ children }:PrivateRouteProps) {
     const router = useRouter();
   
-    useEffect(() => {
-        const token = localStorage.getItem('authTokenNew');
-        if (token) {
-            console.log('-----------token----yes-------')
-            useStore.startTokenRefreshTimer();
-            // if(!useStore.new_user){
-            //     router.push('/auth/login');
-            // }
-          }
-        else{
-            console.log('-----------token----no-------')
-            router.push('/auth/login');
-        }
-    }, [useStore.new_user]);
+    // useEffect(() => {
+    //     // const token = localStorage.getItem('authTokenNew');
+    //     const token = JSON.parse(Cookies.get('authTokenNew') || '{}');
+    //     if (token) {
+    //         useStore.startTokenRefreshTimer();
+    //       }
+    // }, []);
   
     return children;
   }

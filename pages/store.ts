@@ -1,7 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
-import { createContext, useState, useEffect } from "react";
 import jwt_decode from "jwt-decode";
-import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 
 export interface User {
@@ -13,6 +12,11 @@ export interface User {
     password_2: string,
 
 }
+
+const oneDayInMilliseconds = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+// const expirationDate = new Date(Date.now() + oneDayInMilliseconds);
+const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
 
 
 
@@ -106,7 +110,10 @@ class UserStore {
             this.message = newMessage;
             const newUpdateUser: any = jwt_decode(data.access);
             this.new_user = newUpdateUser.username
-            localStorage.setItem('authTokenNew', JSON.stringify(data));
+            // localStorage.setItem('authTokenNew', JSON.stringify(data));
+            // save data to cookies
+            Cookies.set('authTokenNew', JSON.stringify(data), { expires: expirationDate });
+
         }
         else{
             const newMessage = "Credential not match"
@@ -119,34 +126,42 @@ class UserStore {
     updateToken = async() => {
         console.log("--------------token refreshed-----------")
         try{
-        if (this.tokenRefreshTimer) {
-            clearTimeout(this.tokenRefreshTimer);
-            this.tokenRefreshTimer = null;
-          }
-        const token = JSON.parse(localStorage.getItem('authTokenNew') || '{}');
-        const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({'refresh': token.refresh})
-        })
-        const data = await response.json()
-        if (response.status === 200){
-            const newUpdateUser: any = jwt_decode(data.access);
-            this.new_user = newUpdateUser.username
-            localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access, refresh:data.refresh }));
+            if (this.tokenRefreshTimer) {
+                clearTimeout(this.tokenRefreshTimer);
+                this.tokenRefreshTimer = null;
+            }
+            // const token = JSON.parse(localStorage.getItem('authTokenNew') || '{}');
+            const token = JSON.parse(Cookies.get('authTokenNew') || '{}');
+            console.log('token==========================upd--', token)
+            console.log('toke======refresh=============', token.refresh)
+            const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'refresh': token.refresh})
+            })
+            const data = await response.json()
+            if (response.status === 200){
+                const newUpdateUser: any = jwt_decode(data.access);
+                this.new_user = newUpdateUser.username
+                // localStorage.setItem('authTokenNew', JSON.stringify({ ...token, access: data.access, refresh:data.refresh }));
+                // save data to cookies
+                Cookies.set('authTokenNew', JSON.stringify({ ...token, access: data.access, refresh:data.refresh }), { expires: expirationDate });
+                this.startTokenRefreshTimer();
+            }
+            else {
+                // localStorage.removeItem('authTokenNew');
+                Cookies.remove('authTokenNew'); // Remove the cookie
+                this.clearTokenRefreshTimer();
+                this.new_user = "";
+
+            }
             this.startTokenRefreshTimer();
         }
-        else {
-            localStorage.removeItem('authTokenNew');
-            this.clearTokenRefreshTimer();
-            this.new_user = "";
-
-        }
-        this.startTokenRefreshTimer();
-        }
         catch(error:any){
+            // localStorage.removeItem('authTokenNew');
+            Cookies.remove('authTokenNew'); // Remove the cookie
             this.clearTokenRefreshTimer();
             this.new_user = "";
         }
@@ -161,6 +176,43 @@ class UserStore {
             this.tokenRefreshTimer = null;
         }
     }
+
+    // validate token
+    validateToken = async (token: any): Promise<boolean> => {
+        console.log('start------------------------', token.refresh);
+        const response = await fetch('http://127.0.0.1:8000/auth/event/token/refresh/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({'refresh': token.refresh})
+        });
+        const data = await response.json();
+        console.log('----result--------------validate-----', data);
+      
+        let tokenAccess = false;
+        if (response.status === 200){
+          const tokenData = JSON.parse(Cookies.get('authTokenNew') || '{}');
+          tokenAccess = true;
+      
+          // Update the token and save it in cookies
+          tokenData.access = data.access;
+          tokenData.refresh = data.refresh;
+          Cookies.set('authTokenNew', JSON.stringify(tokenData), { expires: expirationDate });
+        //   Get authTokenNew cookies to get new updated cookies
+
+
+        
+        } else {
+          Cookies.remove('authTokenNew'); // Remove the cookie
+          this.clearTokenRefreshTimer();
+          tokenAccess = false;
+        }
+      
+        return tokenAccess;
+      };
+
+        
 
 }
 

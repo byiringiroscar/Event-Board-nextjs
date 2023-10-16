@@ -39,7 +39,7 @@ const Login = () => {
               });
                 router.push('/');
                 // Start the token refresh timer after successful login
-                userStore.startTokenRefreshTimer();
+                // userStore.startTokenRefreshTimer();
         }
         else{
             toast.error(userStore.message, { position: 'top-right' });
